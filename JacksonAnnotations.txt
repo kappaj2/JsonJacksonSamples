@@ -1,0 +1,354 @@
+https://dzone.com/articles/jackson-annotations-for-json-part-1-serialization
+https://dzone.com/articles/jackson-annotations-for-json-part-2-serialization
+https://dzone.com/articles/jackson-annotations-for-json-part-3-deserialization
+https://dzone.com/articles/jackson-annotations-for-json-part-4-general
+
+Jackson is a suite of data-processing tools for Java comprising of three components:
+
+  Streaming (jackson-core) defines low-level streaming APIs and includes JSON-specific implementations.
+
+  Annotations (jackson-annotations) contains standard Jackson annotations.
+
+  Databind (jackson-databind) implements data-binding (and object serialization) support on the streaming package.
+  This package depends on both the streaming and annotations packages.
+
+
+      ============>
+
+  Jackson Serialization and Deserialization Annotations
+
+  The Jackson library provides annotations that you can use in POJOs to control both serialization and deserialization between POJOs and JSON.
+  These annotations that are used in both serialization and deserialization operations are:
+
+    @JsonIgnore
+    @JsonIgnoreProperties
+    @JsonIgnoreType
+    @JsonAutoDetect
+
+    @JsonIgnore
+
+    The @JsonIgnore annotation marks a field of a POJO to be ignored by Jackson during serialization and deserialization.
+    Jackson ignores the field both JSON serialization and deserialization.
+    An example of Java class that uses the @JsonIgnore annotation is this:
+      @JsonIgnore
+      public long personId = 0;
+
+    @JsonIgnoreProperties
+    The @JsonIgnoreProperties annotation is used at the class level to ignore fields during serialization and deserialization.
+    The properties that are declared in this annotation will not be mapped to the JSON content.
+
+    @JsonIgnoreProperties({"userId", "gender"})
+    public class IgnorePropertiesDemoBean {
+        public long  userId = 0;
+        public String  name = "James Clark";
+        public String  gender  = null;
+
+
+      @JsonIgnoreType
+
+    The @JsonIgnoreType annotation is used to mark a class to be ignored during serialization and deserialization.
+    It marks all the properties of the class to be ignored while generating JSON and reading JSON.
+    An example of Java class that uses the @JsonIgnoreType annotation is this.
+
+    public class IgnoreTypeDemoBean {
+    @JsonIgnoreType
+    public static class Address {
+        public String doorNumber = null;
+
+    @JsonAutoDetect
+    The @JsonAutoDetect annotation is used at the class level to tell Jackson to override the
+    visibility of the properties of a class during serialization and deserialization.
+    You can set the visibility with the following elements:
+
+        creatorVisibility
+        fieldVisibility
+        getterVisibility
+        setterVisibility
+        isGetterVisibility
+
+      The JsonAutoDetect class defines public static constants that are similar to Java class visibility levels. They are:
+
+          ANY
+          DEFAULT
+          NON_PRIVATE
+          NONE
+          PROTECTED_AND_PRIVATE
+          PUBLIC_ONLY
+
+      @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+      public class AutoDetectDemoBean {
+              private long personId = 123L;
+              private String  name = "James Clark";
+
+      ============>
+    Jackson provides several annotations that you can use in POJOs to serialize Java objects to JSON.
+    These annotations are:
+
+        @JsonValue
+        @JsonInclude
+        @JsonGetter
+        @JsonAnyGetter
+        @JsonPropertyOrder
+        @JsonRawValue
+        @JsonSerialize
+        @JsonRootName
+
+      @JsonValue
+      The @JsonValue annotation is used at the method level.
+      This annotation tells Jackson to use this method to generate the JSON string from the Java object.
+      @JsonValue
+      public String toJson(){
+          return this.name+","+this.personId+","+this.toString();
+      }
+
+      @JsonInclude
+      The @JsonInclude annotation is used to exclude properties or fields of a class under certain conditions.
+      This is defined using the JsonInclude.Include enum. This enum contains constants that determine whether or not to exclude the property.
+      The constants are:
+
+        ALWAYS
+        NON_DEFAULT
+        NON_EMPTY
+        NON_NULL
+
+      @JsonInclude(JsonInclude.Include.NON_EMPTY)
+      public class IncludeDemoBean {
+
+      @JsonGetter
+      The @JsonGetter annotation is used to customize the generated JSON keys.
+      This is accomplished with the value argument of @JsonGetter.
+      The value passed is the name that should be used as the JSON key.
+
+      @JsonAnyGetter
+      The @JsonAnyGetter annotation can be used when you don’t want to declare a property or a method for every possible key in JSON.
+      This annotation is used on the getter methods which enables you to use a Map to hold all your properties that you want to serialize.
+      Let us consider an example Java class that uses the @JsonAnyGetter annotation.
+
+      public class AnyGetterDemoBean {
+          public long personId = 123L;
+          public String  personName = "James Clark";
+          private Map<String, String> properties = new HashMap<String, String>();
+          @JsonAnyGetter
+          public Map<String, String> getProperties() {
+              return properties;
+          }
+      }
+
+      @JsonPropertyOrder
+      The @JsonPropertyOrder annotation tells Jackson to serialize the Java object to JSON in the order specified as the arguments of the annotation.
+      This annotation also allows partial ordering. The properties are first serialized in the order in which they are found,
+      followed by any other properties not included in the annotation.
+      Let us consider an example of Java class that uses the @JsonPropertyOrder annotation.
+
+      @JsonPropertyOrder({"name", "personId"})
+      public class PropertyOrderDemoBean {
+        public long personId = 123L;
+        public String  name = "James Clark";
+      }
+
+      @JsonRawValue
+      The @JsonRawValue annotation is used on methods and fields.
+      It tells Jackson to serialize the field or property as declared. For example,
+      if you have a String field in your Java class, the JSON value that Jackson generates is enclosed within quotes (" ").
+      But when you annotate the field with @JsonRawValue, Jackson omits the quotes.
+      Let us consider an example Java class that explains the use of @JsonRawValue.
+
+      public class RawValueDemoBean {
+        public long personId = 0;
+        public String  name = "James Clark";
+        @JsonRawValue
+        public String address = "{\"doorNumber\": 1234, \"street\": \"phase-1\", " +
+              "\"city\": \"New York\"}";
+        }
+
+      @JsonSerialize
+      The @JsonSerialize annotation is used tell Jackson to use the declared custom serializer during
+      the serialization of the field, which is marked with this annotation.
+      Let us consider a POJO that uses the @JsonSerializeannotation.
+
+      public class SerializeDemoBean {
+          public long personId = 123L;
+          public String  name = "James Clark";
+          @JsonSerialize(using = CustomDateSerializer.class)
+          public Date activeDate;
+
+      public class CustomDateSerializer extends StdSerializer<Date>{
+          private static SimpleDateFormat simpleDateFormat =
+                      new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+
+          public CustomDateSerializer(){
+              this(null);
+          }
+
+          public CustomDateSerializer(Class<Date> t) {
+              super(t);
+          }
+
+          @Override
+          public void serialize(Date date, JsonGenerator jsonGenerator,
+                                    SerializerProvider serializerProvider) throws IOException {
+              jsonGenerator.writeString(simpleDateFormat.format(date));
+          }
+      }
+
+      @JsonRootName
+      The @JsonRootName annotation can be used to tell Jackson to wrap the object to be serialized with a top-level element.
+      You can pass the name as a parameter to the @JsonRootName annotation.
+      Let us consider that you want to wrap your serialized Java object with the key user.
+      Here is an example of a Java class that uses the @JsonRootName annotation.
+
+      @JsonRootName(value = "user")
+      public class RootNameDemoBean {
+        public long personId = 0;
+        public String  name = "James Clark";
+      }
+
+      ============>
+      Deserialization Annotations
+
+      Let us explore the JSON annotations that can be used to control deserialization of JSON into POJOs.
+      The Jackson deserialization annotations are:
+
+          @JsonSetter
+          @JsonAnySetter
+          @JsonCreator
+          @JacksonInject
+          @JsonDeserialize
+
+      @JsonSetter
+      The @JsonSetter annotation tells Jackson to deserialize the JSON into Java object using the name
+      given in the setter method. Use this annotation when your JSON property names are different to the
+      fields of the Java object class, and you want to map them.
+
+      @JsonSetter("id")
+      public void setPersonId(long personId) {
+        this.personId = personId;
+      }
+
+      @JsonAnySetter
+      The @JsonAnySetter annotation is used on setter methods of a Map field.
+      Sometimes you may find some JSON values that cannot be mapped to the fields in the Java object class.
+      In such a case, the @JsonAnySetter captures the data and stores them in a Map.
+
+      private Map<String, String> properties = new HashMap<String, String>();
+      @JsonAnySetter
+      public void setProperties(String key, String value){
+          properties.put(key, value);
+      }
+
+      @JsonCreator
+      The @JsonCreator annotation tells Jackson that the JSON properties can be mapped to the fields of
+      a constructor of the POJO. This is helpful when the JSON properties do not match with the names
+      of the Java object field names. The @JsonCreator annotation can be used where @JsonSetter cannot be used.
+      For example, immutable objects which need their initial values to be injected through constructors.
+      @JsonCreator
+
+      public CreatorDemoBean(@JsonProperty("id") long personId, @JsonProperty("name") String name) {
+        this.personId = personId;
+        this.name = name;
+      }
+
+      @JacksonInject
+      The @JacksonInject annotation is used to tell Jackson that particular values of the deserialized
+      object will be injected and not read from the JSON string.
+
+      public class JacksonInjectDemoBean {
+          @JacksonInject
+          public long personId = 0;
+          public String  name = "James Clark";
+          public void testDeSerializingWithJacksonInject() throws IOException {
+              String jsonString = "{\"name\": \"Mary Parker\"}";
+              InjectableValues injectableValues = new InjectableValues.Std()
+                  .addValue(long.class, 231L);
+
+              JacksonInjectDemoBean bean = new ObjectMapper().reader(injectableValues)
+                  .forType(JacksonInjectDemoBean.class).readValue(jsonString);
+
+              System.out.println(bean);
+
+      @JsonDeserialize
+      The @JsonDeserialize annotation tells Jackson to use a custom deserializer while deserializing
+      the JSON to Java object. To do so, you need to annotate the field to which you need to apply the custom deserializer.
+
+      @JsonDeserialize(using = CustomDateDeserializer.class)
+      public Date activeDate;
+
+      ============>
+      The general annotations are:
+
+          @JsonProperty
+          @JsonFormat
+          @JsonUnwrapped
+          @JsonView
+          @JsonManagedReference and @JsonBackReference
+          @JsonIdentityInfo
+          @JsonFilter
+
+      public class PropertyDemoBean {
+              @JsonProperty("person-id")
+              public long personId = 123L;
+              @JsonProperty("name")
+              public String  name = "James Clark";
+
+              @JsonFormat
+
+      The @JsonFormat annotation is used to tell Jackson that the format in which the value for a field is serialized.
+      It specifies the format using the JsonFormat.Shape enum.
+
+      Let us consider an example Java class that uses the @JsonFormat annotation to modify the Date and Time
+      format of an activeDate field.
+
+      @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+      @JsonProperty("active-date")
+      public Date activeDate;
+
+      @JsonUnwrapped
+      The @JsonUnwrapped annotation unwraps the values during serialization and deserialization.
+      It helps in rendering the values of a composed class as if they belonged to the parent class.
+      Let us consider an example of Java class that uses the @JsonUnwrapped annotation.
+
+      public class UnwrappedDemoBean {
+          public static class Address {
+              public String doorNumber = "12";
+              public String streetName = "phase-1";
+              public String pinCode = "123456";
+              public String city = "New York";
+              @Override
+              public String toString() {
+                  return "Address{" +
+                          "doorNumber='" + doorNumber + '\'' +
+                          ", streetName='" + streetName + '\'' +
+                          ", pinCode='" + pinCode + '\'' +
+                          ", city='" + city + '\'' +
+                          '}';
+              }
+          }
+          public long personId = 0;
+          public String  name = "James Clark";
+          @JsonUnwrapped
+          public Address address = new Address();
+      }
+
+
+      @JsonManagedReference and @JsonBackReference
+      The @JsonManagedReference and @JsonBackReference annotation are used to create JSON structures
+      that have a bidirectional relationship. Without this annotation, you get an error like this:
+        "com.fasterxml.jackson.databind.JsonMappingException:Infinite recursion (StackOverflowError)"
+
+      @JsonBackReference
+      public List<ManagedReferenceDemoBean> employees;
+
+      @JsonIdentityInfo
+      The @JsonIdentityInfo tells Jackson to perform serialization or deserialization using the identity of the object.
+      This annotation works similar to the @JsonManagedReference and @JsonBackReference annotations with the difference
+      that @JsonIdentityInfo includes the back reference object.
+
+      @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "personId")
+      public class IdentityInfoEmployeeDemoBean {
+          public long personId = 0;
+
+      @JsonFilter
+      The @JsonFilter annotation is used to tell Jackson to use a custom defined filter to serialize the Java object.
+      To define your filter, you need to use the FilterProvider class.
+      This provider gets the actual filter instance to use.
+      The filter is then configured by assigning the FilterProvider to ObjectMapper.
