@@ -18,13 +18,9 @@ public class CreatorDemoBean {
     public String name = "James Clark";
     
     @JsonCreator
-    
     public CreatorDemoBean(@JsonProperty("id") long personId, @JsonProperty("name") String name) {
-        
         this.personId = personId;
-        
         this.name = name;
-        
     }
     
     @Override

@@ -17,9 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class IncludeDemoBean {
     
     public long personId = 123L;
-    
     public String  name = null;
-    
     @Override
     
     public String toString() {

@@ -11,9 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class IgnorePropertiesDemoBean {
     
     public long  userId = 0;
-    
     public String  name = "James Clark";
-    
     public String  gender  = null;
     
     @Override

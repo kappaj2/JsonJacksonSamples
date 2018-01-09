@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class RootNameDemoBean {
     
     public long personId = 0;
-    
     public String  name = "James Clark";
     
 }

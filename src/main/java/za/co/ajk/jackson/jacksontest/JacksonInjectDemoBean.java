@@ -11,7 +11,6 @@ public class JacksonInjectDemoBean {
     
     @JacksonInject
     public long personId = 0;
-    
     public String  name = "James Clark";
     
     @Override
